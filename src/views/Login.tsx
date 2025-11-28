@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
+import { useNavigate } from 'react-router-dom';
 import ErrorMessage from '../components/ErrorMessage'
 import api from '../config/axios'
 import { toast } from 'sonner'
@@ -9,6 +10,7 @@ export default function Login() {
     correo: '',
     password: '',
   }
+  const navigate = useNavigate();
 
   const { register, handleSubmit, formState: { errors } } = useForm({ defaultValues: initialValues })
 
@@ -21,7 +23,7 @@ export default function Login() {
     toast.success("Inicio de sesión exitoso");
 
     setTimeout(() => {
-      window.location.href = "/registrosUsuarios";
+      navigate("/registrosUsuarios");
     }, 800);
 
   } catch (error: any) {
@@ -48,6 +50,7 @@ export default function Login() {
           <input
             id="correo"
             type="email"
+            autoComplete="email"
             placeholder="Correo Electrónico"
             className="w-full p-2 text-sm text-gray-800 bg-gray-100 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900"
             {...register('correo', {
@@ -71,6 +74,7 @@ export default function Login() {
             id="password"
             type="password"
             placeholder="********"
+            autoComplete="current-password"
             className="w-full p-2 text-sm text-gray-800 bg-gray-100 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900"
             {...register("password", {
               required: "El Password es obligatorio",
