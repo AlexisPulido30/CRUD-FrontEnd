@@ -1,5 +1,5 @@
 // api/users.ts
-import api from "../config/axios";
+import api from "../config/axios"; 
 
 //Funcion para obtener un usuario
 export async function getUser() {
@@ -20,3 +20,16 @@ export async function fetchAllUsers() {
     throw new Error(error.response?.data?.error || "Error al obtener usuarios");
   }
 }
+
+//funcion para eliminar los usuarios
+export const deleteUser = async (id: number) => { 
+  const token = localStorage.getItem("token");
+
+  const { data } = await api.delete(`/user/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+
+  return data;
+};

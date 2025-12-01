@@ -3,6 +3,7 @@ import Register from "./views/Register";
 import Login from "./views/Login";
 import AuthLayout from "./layouts/AuthLayout";
 import IndexLayout from "./layouts/IndexLayout";
+import RegistrosUsuarios from "./views/RegistrosUsuarios";
 
 export default function Router() {
   return (
@@ -16,7 +17,7 @@ export default function Router() {
 
         {/* RUTA PROTEGIDAS */}
         <Route element={<IndexLayout />}>
-          <Route path="/registrosUsuarios" />
+          <Route path="/registrosUsuarios" element={<RegistrosUsuarios/>} />
         </Route>
       </Routes>
     </BrowserRouter>

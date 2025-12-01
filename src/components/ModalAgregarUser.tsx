@@ -10,9 +10,7 @@ interface ModalAgregarUsuarioProps {
 }
 
 export default function ModalAgregarUsuario({ isOpen, onClose }: ModalAgregarUsuarioProps) {
-    const queryClient = useQueryClient();
-
-    if (!isOpen) return null;
+    const queryClient = useQueryClient();  // ← Mover aquí
 
     const initialValues = {
         name: '',
@@ -24,7 +22,9 @@ export default function ModalAgregarUsuario({ isOpen, onClose }: ModalAgregarUsu
 
     const { register, handleSubmit, formState: { errors }, reset } = useForm({
         defaultValues: initialValues
-    })
+    });  // ← También debe ir arriba
+
+    if (!isOpen) return null; // ← Ahora sí
 
     const handleRegister = async (formData: typeof initialValues) => {
         try {
@@ -56,6 +56,7 @@ export default function ModalAgregarUsuario({ isOpen, onClose }: ModalAgregarUsu
             }
         }
     }
+
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">

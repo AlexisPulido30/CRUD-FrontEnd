@@ -11,7 +11,7 @@ export default function IndexLayout() {
     retry: 1,
     refetchOnWindowFocus: false,
   });
-  console.log(data);
+  
   // Mientras carga
   if (isLoading) return <p>Cargando...</p>;
 
@@ -19,5 +19,5 @@ export default function IndexLayout() {
   if (isError || !data) return <Navigate to="/auth/login" replace />;
 
   // Si hay datos del usuario
-  return <RegistrosUsuarios data={data} />;
+  return <RegistrosUsuarios />
 }

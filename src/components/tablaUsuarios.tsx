@@ -2,14 +2,41 @@
 import { Trash2, Edit } from "lucide-react";
 import { useState } from "react";
 import ModalAgregarUsuario from "./ModalAgregarUser";
-
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { deleteUser } from "../api/api";
+import { toast } from "sonner";
 interface TablaUsuariosProps {
     usuarios: any[];
 }
 
 export default function TablaUsuarios({ usuarios }: TablaUsuariosProps) {
 
-const [modalOpen, setModalOpen] = useState(false);
+    const [modalOpen, setModalOpen] = useState(false);
+
+    //Refrescar la informacion
+    const queryClient = useQueryClient();
+
+
+    //mutacion para eliminar usuario
+    const deleteMutation = useMutation({
+        mutationFn: deleteUser,
+        onSuccess: () => {
+            toast.success("Usuario eliminado correctamente");
+            queryClient.invalidateQueries({ queryKey: ["allUsers"] }); 
+        },
+        onError: (error: any) => {
+            toast.error(error.response?.data?.error);
+        }
+    });
+
+
+    //funcion para el boton de eliminar 
+    const handleDelete = (id: number) => {
+        if (confirm("¿Seguro que deseas eliminar este usuario?")) {
+            deleteMutation.mutate(id);
+        }
+    };
+
 
     return (
         <div className="p-6">
@@ -58,7 +85,8 @@ const [modalOpen, setModalOpen] = useState(false);
                                     <button className="text-blue-600 hover:text-blue-800">
                                         <Edit size={20} />
                                     </button>
-                                    <button className="text-red-600 hover:text-red-800">
+                                    <button className="text-red-600 hover:text-red-800"
+                                        onClick={() => handleDelete(usuario.id)}>
                                         <Trash2 size={20} />
                                     </button>
                                 </td>
