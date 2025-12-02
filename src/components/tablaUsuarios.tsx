@@ -1,17 +1,30 @@
 // components/TablaUsuarios.tsx
-import { Trash2, Edit } from "lucide-react";
-import { useState } from "react";
-import ModalAgregarUsuario from "./ModalAgregarUser";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import ModalEditarUsuario from "./ModalEditarUsuario";
+import ModalAgregarUsuario from "./ModalAgregarUser";
+import ConfirmDeleteModal from "./ConfirmDeleteModal";
+import { Trash2, Edit } from "lucide-react";
 import { deleteUser } from "../api/api";
+import { useState } from "react";
 import { toast } from "sonner";
+
+
 interface TablaUsuariosProps {
     usuarios: any[];
 }
 
 export default function TablaUsuarios({ usuarios }: TablaUsuariosProps) {
 
+    // estados para brir Modal para agregar usuario
     const [modalOpen, setModalOpen] = useState(false);
+
+    //estados para biri modal y ver si hay usuario sellecionado
+    const [modalEditOpen, setModalEditOpen] = useState(false); // editar usuario
+    const [usuarioSeleccionado, setUsuarioSeleccionado] = useState<any>(null);
+
+    // estado para modal de eliminar
+    const [openDeleteModal, setOpenDeleteModal] = useState(false);
+    const [usuarioAEliminar, setUsuarioAEliminar] = useState<number | null>(null);
 
     //Refrescar la informacion
     const queryClient = useQueryClient();
@@ -22,19 +35,31 @@ export default function TablaUsuarios({ usuarios }: TablaUsuariosProps) {
         mutationFn: deleteUser,
         onSuccess: () => {
             toast.success("Usuario eliminado correctamente");
-            queryClient.invalidateQueries({ queryKey: ["allUsers"] }); 
+            queryClient.invalidateQueries({ queryKey: ["allUsers"] });
         },
         onError: (error: any) => {
             toast.error(error.response?.data?.error);
         }
     });
 
+    // Cuando se hace clic en el botón de eliminar
+    const handleDeleteClick = (id: number) => {
+        setUsuarioAEliminar(id);
+        setOpenDeleteModal(true);
+    };
 
-    //funcion para el boton de eliminar 
-    const handleDelete = (id: number) => {
-        if (confirm("¿Seguro que deseas eliminar este usuario?")) {
-            deleteMutation.mutate(id);
-        }
+    // Confirmar eliminación desde el modal
+    const handleConfirmDelete = () => {
+        if (usuarioAEliminar == null) return;
+        deleteMutation.mutate(usuarioAEliminar);
+         setOpenDeleteModal(false);
+    };
+
+
+    // Abrir modal de edición
+    const handleEdit = (usuario: any) => {
+        setUsuarioSeleccionado(usuario);
+        setModalEditOpen(true);
     };
 
 
@@ -77,16 +102,26 @@ export default function TablaUsuarios({ usuarios }: TablaUsuariosProps) {
                                 <td className="px-6 py-3">{usuario.telefono}</td>
                                 <td className="px-6 py-3">
                                     {usuario.fechaNacimiento
-                                        ? new Date(usuario.fechaNacimiento).toLocaleDateString("es-MX")
+                                        ? (() => {
+                                            // Nos aseguramos de quedarnos solo con YYYY-MM-DD
+                                            const fechaStr = String(usuario.fechaNacimiento).substring(0, 10);
+                                            const [year, month, day] = fechaStr.split("-");
+
+                                            // Formato DD/MM/YYYY para MX
+                                            return `${day}/${month}/${year}`;
+                                        })()
                                         : "-"}
                                 </td>
+
                                 <td className="px-6 py-3">{usuario.genero}</td>
                                 <td className="flex justify-center px-6 py-3 space-x-4 text-center">
-                                    <button className="text-blue-600 hover:text-blue-800">
+                                    <button
+                                        className="text-blue-600 hover:text-blue-800"
+                                        onClick={() => handleEdit(usuario)}>
                                         <Edit size={20} />
                                     </button>
                                     <button className="text-red-600 hover:text-red-800"
-                                        onClick={() => handleDelete(usuario.id)}>
+                                        onClick={() => handleDeleteClick(usuario.id)}>
                                         <Trash2 size={20} />
                                     </button>
                                 </td>
@@ -98,7 +133,35 @@ export default function TablaUsuarios({ usuarios }: TablaUsuariosProps) {
             </div>
 
             {/* MODAL DE AGREGAR USUARIOS*/}
-            <ModalAgregarUsuario isOpen={modalOpen} onClose={() => setModalOpen(false)} />
+            <ModalAgregarUsuario
+                isOpen={modalOpen}
+                onClose={() => setModalOpen(false)} />
+
+
+            {/* Modal de confirmación de eliminación */}
+            <ConfirmDeleteModal
+                open={openDeleteModal}
+                message="¿Seguro que deseas eliminar este usuario? Esta acción no se puede deshacer."
+                loading={deleteMutation.isPending}
+                onConfirm={handleConfirmDelete}
+                onClose={() => {
+                    if (!deleteMutation.isPending) {
+                        setOpenDeleteModal(false);
+                        setUsuarioAEliminar(null);
+                    }
+                }}
+            />
+
+
+            {/* MODAL EDITAR */}
+            {modalEditOpen && usuarioSeleccionado && (
+                <ModalEditarUsuario
+                    isOpen={modalEditOpen}
+                    onClose={() => setModalEditOpen(false)}
+                    usuario={usuarioSeleccionado}
+                />
+            )}
+
         </div>
     );
 }

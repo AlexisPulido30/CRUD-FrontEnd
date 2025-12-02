@@ -33,3 +33,21 @@ export const deleteUser = async (id: number) => {
 
   return data;
 };
+
+
+// Función para editar usuario
+export const updateUser = async (id: number, data: any) => {
+  const token = localStorage.getItem("token");
+
+  const response = await api.patch(`/user/${id}`, data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return response.data;
+};
+
+
+
+
