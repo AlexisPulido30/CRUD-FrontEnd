@@ -1,10 +1,13 @@
 import { Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import ErrorMessage from '../components/ErrorMessage'
+import { useNavigate } from 'react-router-dom';
 import api from '../config/axios'
 import { toast } from 'sonner'
 
 export default function Register() {
+
+   const navigate = useNavigate();
   const initialValues = {
     name: '',
     email: '',
@@ -33,6 +36,10 @@ export default function Register() {
       setTimeout(() => {
         toast.success(`Correo enviado a: ${formData.email}`)
       }, 1500)
+
+        setTimeout(() => {
+      navigate("/registrosUsuarios");
+    }, 800);
 
       reset()
 

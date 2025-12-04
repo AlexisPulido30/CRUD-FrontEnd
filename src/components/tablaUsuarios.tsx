@@ -5,12 +5,18 @@ import ModalAgregarUsuario from "./ModalAgregarUser";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
 import { Trash2, Edit } from "lucide-react";
 import { deleteUser } from "../api/api";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 
 interface TablaUsuariosProps {
     usuarios: any[];
+
+}
+
+
+interface JwtPayload {
+    id: number;
 }
 
 export default function TablaUsuarios({ usuarios }: TablaUsuariosProps) {
@@ -26,8 +32,31 @@ export default function TablaUsuarios({ usuarios }: TablaUsuariosProps) {
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
     const [usuarioAEliminar, setUsuarioAEliminar] = useState<number | null>(null);
 
+
+    //id del usuario logueado
+    const [loggedUserId, setLoggedUserId] = useState<number | null>(null);
+
     //Refrescar la informacion
     const queryClient = useQueryClient();
+
+    useEffect(() => {
+        try {
+            const token = localStorage.getItem("AUTH_TOKEN"); 
+            if (!token) return;
+
+            const [, payloadBase64] = token.split(".");
+
+            //  En esta parte se normaliza el jwt 
+            const base64 = payloadBase64.replace(/-/g, "+").replace(/_/g, "/");
+            const payloadString = atob(base64);
+            const payload: JwtPayload = JSON.parse(payloadString);
+
+            //Guardamos el id del usairos logueado
+            setLoggedUserId(payload.id); 
+        } catch (e) {
+            console.error("No se pudo leer el JWT:", e);
+        }
+    }, []);
 
 
     //mutacion para eliminar usuario
@@ -52,7 +81,7 @@ export default function TablaUsuarios({ usuarios }: TablaUsuariosProps) {
     const handleConfirmDelete = () => {
         if (usuarioAEliminar == null) return;
         deleteMutation.mutate(usuarioAEliminar);
-         setOpenDeleteModal(false);
+        setOpenDeleteModal(false);
     };
 
 
@@ -95,39 +124,52 @@ export default function TablaUsuarios({ usuarios }: TablaUsuariosProps) {
                         </tr>
                     </thead>
                     <tbody>
-                        {(Array.isArray(usuarios) ? usuarios : []).map((usuario, index) => (
-                            <tr key={index} className="border-b hover:bg-gray-50">
-                                <td className="px-6 py-3">{usuario.nombre}</td>
-                                <td className="px-6 py-3">{usuario.correo}</td>
-                                <td className="px-6 py-3">{usuario.telefono}</td>
-                                <td className="px-6 py-3">
-                                    {usuario.fechaNacimiento
-                                        ? (() => {
-                                            // Nos aseguramos de quedarnos solo con YYYY-MM-DD
-                                            const fechaStr = String(usuario.fechaNacimiento).substring(0, 10);
-                                            const [year, month, day] = fechaStr.split("-");
+                        {(Array.isArray(usuarios) ? usuarios : []).map((usuario, index) => {
+                            const esMismoUsuario = loggedUserId === usuario.id;
 
-                                            // Formato DD/MM/YYYY para MX
-                                            return `${day}/${month}/${year}`;
-                                        })()
-                                        : "-"}
-                                </td>
+                            return (
+                                <tr key={index} className="border-b hover:bg-gray-50">
+                                    <td className="px-6 py-3">{usuario.nombre}</td>
+                                    <td className="px-6 py-3">{usuario.correo}</td>
+                                    <td className="px-6 py-3">{usuario.telefono}</td>
+                                    <td className="px-6 py-3">
+                                        {usuario.fechaNacimiento
+                                            ? (() => {
+                                                const fechaStr = String(usuario.fechaNacimiento).substring(0, 10);
+                                                const [year, month, day] = fechaStr.split("-");
+                                                return `${day}/${month}/${year}`;
+                                            })()
+                                            : "-"}
+                                    </td>
 
-                                <td className="px-6 py-3">{usuario.genero}</td>
-                                <td className="flex justify-center px-6 py-3 space-x-4 text-center">
-                                    <button
-                                        className="text-blue-600 hover:text-blue-800"
-                                        onClick={() => handleEdit(usuario)}>
-                                        <Edit size={20} />
-                                    </button>
-                                    <button className="text-red-600 hover:text-red-800"
-                                        onClick={() => handleDeleteClick(usuario.id)}>
-                                        <Trash2 size={20} />
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
+                                    <td className="px-6 py-3">{usuario.genero}</td>
+                                    <td className="flex justify-center px-6 py-3 space-x-4 text-center">
+                                        {/* BOTON DE EDITAR */}
+                                        <button
+                                            className="text-blue-600 hover:text-blue-800"
+                                            onClick={() => handleEdit(usuario)}
+                                        >
+                                            <Edit size={20} />
+                                        </button>
+
+                                        {/* BOTON DE ELILIMAR */}
+                                        <button
+                                            className="text-red-600 hover:text-red-800 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-red-600"
+                                            disabled={esMismoUsuario}
+                                            onClick={() => {
+                                                if (esMismoUsuario) return; 
+                                                handleDeleteClick(usuario.id);
+                                            }}
+                                        >
+                                            <Trash2 size={20} />
+                                        </button>
+                                    </td>
+                                </tr>
+                            );
+                        })}
                     </tbody>
+
+
 
                 </table>
             </div>
