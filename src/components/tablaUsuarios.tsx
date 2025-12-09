@@ -8,35 +8,22 @@ import { deleteUser } from "../api/api";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-
 interface TablaUsuariosProps {
     usuarios: any[];
 
 }
-
-
 interface JwtPayload {
     id: number;
 }
 
 export default function TablaUsuarios({ usuarios }: TablaUsuariosProps) {
 
-    // estados para brir Modal para agregar usuario
-    const [modalOpen, setModalOpen] = useState(false);
-
-    //estados para biri modal y ver si hay usuario sellecionado
-    const [modalEditOpen, setModalEditOpen] = useState(false); // editar usuario
-    const [usuarioSeleccionado, setUsuarioSeleccionado] = useState<any>(null);
-
-    // estado para modal de eliminar
-    const [openDeleteModal, setOpenDeleteModal] = useState(false);
-    const [usuarioAEliminar, setUsuarioAEliminar] = useState<number | null>(null);
-
-
-    //id del usuario logueado
-    const [loggedUserId, setLoggedUserId] = useState<number | null>(null);
-
-    //Refrescar la informacion
+    const [modalOpen, setModalOpen] = useState(false)
+    const [modalEditOpen, setModalEditOpen] = useState(false)
+    const [usuarioSeleccionado, setUsuarioSeleccionado] = useState<any>(null)
+    const [openDeleteModal, setOpenDeleteModal] = useState(false)
+    const [usuarioAEliminar, setUsuarioAEliminar] = useState<number | null>(null)
+    const [loggedUserId, setLoggedUserId] = useState<number | null>(null)
     const queryClient = useQueryClient();
 
     useEffect(() => {
@@ -44,14 +31,11 @@ export default function TablaUsuarios({ usuarios }: TablaUsuariosProps) {
             const token = localStorage.getItem("AUTH_TOKEN"); 
             if (!token) return;
 
-            const [, payloadBase64] = token.split(".");
-
-            //  En esta parte se normaliza el jwt 
+            const [, payloadBase64] = token.split("."); 
             const base64 = payloadBase64.replace(/-/g, "+").replace(/_/g, "/");
             const payloadString = atob(base64);
             const payload: JwtPayload = JSON.parse(payloadString);
 
-            //Guardamos el id del usairos logueado
             setLoggedUserId(payload.id); 
         } catch (e) {
             console.error("No se pudo leer el JWT:", e);
@@ -59,7 +43,6 @@ export default function TablaUsuarios({ usuarios }: TablaUsuariosProps) {
     }, []);
 
 
-    //mutacion para eliminar usuario
     const deleteMutation = useMutation({
         mutationFn: deleteUser,
         onSuccess: () => {
@@ -71,21 +54,17 @@ export default function TablaUsuarios({ usuarios }: TablaUsuariosProps) {
         }
     });
 
-    // Cuando se hace clic en el botón de eliminar
     const handleDeleteClick = (id: number) => {
         setUsuarioAEliminar(id);
         setOpenDeleteModal(true);
     };
 
-    // Confirmar eliminación desde el modal
     const handleConfirmDelete = () => {
         if (usuarioAEliminar == null) return;
         deleteMutation.mutate(usuarioAEliminar);
         setOpenDeleteModal(false);
     };
 
-
-    // Abrir modal de edición
     const handleEdit = (usuario: any) => {
         setUsuarioSeleccionado(usuario);
         setModalEditOpen(true);

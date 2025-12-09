@@ -15,7 +15,7 @@ export default function Router() {
           <Route path="/auth/register" element={<Register />} />
         </Route>
 
-        {/* RUTA PROTEGIDAS */}
+        {/* RUTA pRIVADA */}
         <Route element={<IndexLayout />}>
           <Route path="/registrosUsuarios" element={<RegistrosUsuarios/>} />
         </Route>

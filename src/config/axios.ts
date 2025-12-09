@@ -5,7 +5,6 @@ const api = axios.create({
   withCredentials: false,
 });
 
-// Interceptor para token
 api.interceptors.request.use(config => {
   const token = localStorage.getItem("AUTH_TOKEN");
   if (token && config.headers) {

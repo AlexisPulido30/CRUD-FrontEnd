@@ -11,7 +11,7 @@ interface ModalEditarUsuarioProps {
     usuario: any;     
 }
 
-//Estructura que se mandara a mi backend 
+
 interface UpdatePayload {
     id: number;
     data: {
@@ -25,12 +25,12 @@ interface UpdatePayload {
 
 export default function ModalEditarUsuario({ isOpen, onClose, usuario }: ModalEditarUsuarioProps) {
 
-    // modal cerrado
+   
     if (!isOpen) return null;
 
     const queryClient = useQueryClient();
 
-    // Formulario con valores iniciales precargados del usuario
+    
     const { register, handleSubmit, formState: { errors } } = useForm({
         defaultValues: {
             name: usuario?.nombre || "",
@@ -41,7 +41,6 @@ export default function ModalEditarUsuario({ isOpen, onClose, usuario }: ModalEd
         }
     });
 
-    // Mutacion para editar usuario
     const mutation = useMutation({
         
         mutationFn: ({ id, data }: UpdatePayload) => updateUser(id, data),
@@ -56,7 +55,7 @@ export default function ModalEditarUsuario({ isOpen, onClose, usuario }: ModalEd
         onError: () => toast.error("Error al actualizar usuario")
     });
 
-    // Funcion qeu se ejecuta al enviar el fomrilaro 
+
     const handleUpdate = (form: any) => {
 
         console.log("Datos enviados al backend", form)

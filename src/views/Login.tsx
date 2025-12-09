@@ -8,7 +8,6 @@ import { toast } from 'sonner'
 
 export default function Login() {
 
-  // Valores iniciales del formulario 
   const initialValues = {
     correo: '',
     password: '',
@@ -18,13 +17,11 @@ export default function Login() {
 
   const { register, handleSubmit, formState: { errors } } = useForm({ defaultValues: initialValues })
 
-  // Función que se ejecuta al enviar el formulario y pasar la validación
+ 
   const handleLogin = async (formData: typeof initialValues) => {
     try {
-      //peticion popara el backend
       const { data } = await api.post("/auth/login", formData);
 
-      // Se guarda el token que regresa el backend en el localStorage
       localStorage.setItem("AUTH_TOKEN", data.token);
 
       toast.success("Inicio de sesión exitoso");
@@ -93,14 +90,12 @@ export default function Login() {
           {errors.password && <ErrorMessage>{errors.password.message}</ErrorMessage>}
         </div>
 
-        {/* Botón de enviar formulario */}
         <input
           type="submit"
           className="w-full p-2 font-semibold text-white transition bg-blue-800 rounded-lg hover:bg-blue-600"
           value="Inicar Sesion"
         />
 
-        {/* Link para navegar a la pantalla de registro */}
         <nav className="text-center">
           <Link
             className="block mt-3 text-sm text-blue-800 hover:underline"

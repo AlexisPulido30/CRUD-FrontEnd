@@ -7,8 +7,6 @@ import { fetchAllUsers } from "../api/api";
 
 export default function RegistrosUsuarios() {
 
-   
-
   const { data: usuarios, isLoading, isError } = useQuery({
     queryKey: ["allUsers"],
     queryFn: fetchAllUsers,

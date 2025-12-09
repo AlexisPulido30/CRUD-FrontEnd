@@ -1,7 +1,5 @@
-// api/users.ts
 import api from "../config/axios"; 
 
-//Funcion para obtener un usuario
 export async function getUser() {
   try {
     const { data } = await api.get("/user"); 
@@ -11,7 +9,7 @@ export async function getUser() {
   }
 }
 
-//Funcion para obtener todos los usuarios
+
 export async function fetchAllUsers() {
   try {
     const { data } = await api.get("/users");
@@ -21,7 +19,6 @@ export async function fetchAllUsers() {
   }
 }
 
-//funcion para eliminar los usuarios
 export const deleteUser = async (id: number) => { 
   const token = localStorage.getItem("token");
 
@@ -34,8 +31,6 @@ export const deleteUser = async (id: number) => {
   return data;
 };
 
-
-// Función para editar usuario
 export const updateUser = async (id: number, data: any) => {
   const token = localStorage.getItem("token");
 
