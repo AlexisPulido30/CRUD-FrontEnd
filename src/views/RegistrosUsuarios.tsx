@@ -1,12 +1,8 @@
-// RegistrosUsuarios.tsx
-import Header from "../components/header";
 import TablaUsuarios from "../components/tablaUsuarios";
 import { useQuery } from "@tanstack/react-query";
 import { fetchAllUsers } from "../api/api";
 
-
 export default function RegistrosUsuarios() {
-
   const { data: usuarios, isLoading, isError } = useQuery({
     queryKey: ["allUsers"],
     queryFn: fetchAllUsers,
@@ -16,24 +12,17 @@ export default function RegistrosUsuarios() {
 
   if (isLoading)
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-[70vh]">
         <p className="text-2xl font-bold text-gray-700">Cargando usuarios...</p>
       </div>
     );
 
   if (isError)
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-[70vh]">
         <p className="text-2xl font-bold text-red-600">Error al cargar usuarios</p>
       </div>
     );
 
-  return (
-    <div>
-      <Header />
-      <main className="p-5">
-        <TablaUsuarios usuarios={usuarios || []} />
-      </main>
-    </div>
-  );
+  return <TablaUsuarios usuarios={usuarios || []} />;
 }

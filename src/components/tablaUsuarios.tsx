@@ -76,7 +76,7 @@ export default function TablaUsuarios({ usuarios }: TablaUsuariosProps) {
 
             <div className="mb-4 text-center">
                 <h1 className="text-xl font-bold text-gray-800">
-                    Registros de Usuarios
+                    Usuarios Registrados
                 </h1>
             </div>
 
