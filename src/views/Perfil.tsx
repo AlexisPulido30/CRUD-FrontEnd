@@ -9,7 +9,6 @@ interface UpdatePayload {
   id: number;
   data: {
     nombre: string;
-    correo: string;
     telefono: string;
     fechaNacimiento: string;
     genero: string;
@@ -69,8 +68,7 @@ export default function Perfil() {
     mutation.mutate({
       id: usuario.id,
       data: {
-        nombre: form.name,
-        correo: form.email, 
+        nombre: form.name, 
         telefono: form.number,
         fechaNacimiento: form.fechaNacimiento,
         genero: form.genero,

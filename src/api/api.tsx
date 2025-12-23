@@ -1,13 +1,18 @@
 import api from "../config/axios"; 
 
 export async function getUser() {
+  const token = localStorage.getItem("token");
+
   try {
-    const { data } = await api.get("/user"); 
+    const { data } = await api.get("/user", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
     return data;
   } catch (error: any) {
     throw new Error(error.response?.data?.error || "Error al obtener usuario");
   }
 }
+
 
 
 export async function fetchAllUsers() {

@@ -1,13 +1,12 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import ErrorMessage from '../components/ErrorMessage'
-import { useNavigate } from 'react-router-dom';
 import api from '../config/axios'
 import { toast } from 'sonner'
 
 export default function Register() {
+  const navigate = useNavigate()
 
-   const navigate = useNavigate();
   const initialValues = {
     name: '',
     email: '',
@@ -16,7 +15,8 @@ export default function Register() {
     genero: ''
   }
 
-  const { register, handleSubmit, formState: { errors }, reset } = useForm({ defaultValues: initialValues })
+  const { register, handleSubmit, formState: { errors }, reset } =
+    useForm({ defaultValues: initialValues })
 
   const handleRegister = async (formData: typeof initialValues) => {
     try {
@@ -28,21 +28,18 @@ export default function Register() {
         genero: formData.genero,
       }
 
-      const { data } = await api.post('/register', payload)
+      await api.post('/register', payload)
 
       
-      toast.success(data.message || 'Usuario registrado correctamente')
-
+      toast.success('Usuario registrado correctamente')
+      
       setTimeout(() => {
         toast.success(`Correo enviado a: ${formData.email}`)
-      }, 1500)
+      }, 800)
 
-        setTimeout(() => {
-      navigate("/registrosUsuarios");
-    }, 800);
-
-      reset()
-
+      setTimeout(() => {
+        navigate('/registrosUsuarios')
+      }, 1200)
 
       reset()
     } catch (error: any) {
@@ -54,7 +51,6 @@ export default function Register() {
       }
     }
   }
-
 
   return (
     <div className="flex items-center justify-center min-h-screen py-16">
@@ -100,7 +96,8 @@ export default function Register() {
           <label htmlFor="number" className="text-sm text-gray-600">Número de Teléfono</label>
           <input
             id="number"
-            type="number"
+            type="text"
+            inputMode="numeric"
             placeholder="Ingresa tu número telefónico"
             className="w-full p-2 text-sm text-gray-800 bg-gray-100 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900"
             {...register('number', {
